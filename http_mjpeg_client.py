@@ -46,7 +46,7 @@ class MJPEGClient(Protocol):
         else:
             authstring = ''
         # Form proper HTTP request with header
-        to_send = 'GET ' + self.config['request'] + ' HTTP/1.1\r\n' + \
+        to_send = 'GET ' + self.config['request'] + ' HTTP/1.0\r\n' + \
             authstring + \
             'User-Agent: Python M-JPEG Client\r\n' + \
             'Keep-Alive: 300\r\n' + \
