@@ -68,10 +68,7 @@ class MJPEGClient(Protocol):
                 if line.endswith('200 OK'): # Connection went fine
                     self.isConnected = True
                     if debug: print 'Connected'
-                if line.startswith('Content-Type: multipart'): # Got multipart
-                    r = re.search(r'boundary="?(.*)"?', line)
-                    self.boundary = r.group(1) # Extract boundary
-                    if debug: print 'Got boundary:', self.boundary
+                self.checkForBoundary(line)
             # If we got more data, find a JPEG there
             if len(data_sp) == 2:
                 self.findJPEG(data_sp[1])
@@ -79,12 +76,19 @@ class MJPEGClient(Protocol):
             # If connection is alredy made find a JPEG right away
             self.findJPEG(data)
     
+    def checkForBoundary(self, line):
+      if line.startswith('Content-Type: multipart'): # Got multipart
+          r = re.search(r'boundary="?(.*)"?', line)
+          self.boundary = r.group(1) # Extract boundary
+          if debug: print 'Got boundary:', self.boundary
+
     def findJPEG(self, data):
         hasMoreThanHeader = False
         # If we know next image size, than image header is already parsed
         if not self.next_img_size:
             # Otherwise it should be a header first
             for line in data.splitlines():
+                if not len(self.boundary): self.checkForBoundary(line)
                 if line == '--'+self.boundary:
                     self.isHeader = True
                     if debug: print 'Got frame header'
