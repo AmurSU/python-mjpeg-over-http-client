@@ -22,7 +22,7 @@ from twisted.internet.protocol import Protocol, ClientFactory
 from base64 import b64encode
 import re
 
-debug = 1
+debug = 0
 
 class MJPEGClient(Protocol):
     def __init__(self):
